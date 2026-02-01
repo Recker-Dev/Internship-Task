@@ -1,6 +1,7 @@
 import asyncio
 from app.workflow.graph import compiled_graph
 from app.models.graph import GraphState
+from pprint import pprint
 
 
 async def main():
@@ -8,6 +9,7 @@ async def main():
         GraphState(file_name="Invoice_4_Price_Trap.pdf")
     )
 
+    pprint(result["discrepancies"])
 
 
 if __name__ == "__main__":

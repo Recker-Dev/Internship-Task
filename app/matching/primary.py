@@ -91,7 +91,10 @@ def primary_matching(
 
     # Net Total Validation (Strict)
     total_check = validate_total_variance(
-        invoice_total=invoice.totals.total_due, po_total=po.get("total")
+        invoice_total=invoice.totals.total_due,
+        invoice_subtotal=invoice.totals.subtotal,
+        invoice_vat_amount=invoice.totals.vat_amount,
+        po_total=po.get("total"),
     )
 
     if not total_check["valid"]:
@@ -117,6 +120,6 @@ def primary_matching(
         ),
         "pairing_result": pairing_result,
         "item_validations": item_validations,
-        "total_variance": total_check["total_variance"],
-        "total_variance_percent": total_check["total_variance_percent"],
+        "total_variance": total_check["variance_amount"],
+        "total_variance_percent": total_check["variance_percent"],
     }

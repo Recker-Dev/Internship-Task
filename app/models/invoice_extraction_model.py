@@ -23,7 +23,7 @@ class ReceiptTotals(BaseModel):
     vat_rate: float
     vat_amount: float
     total_due: float
-    currency: str
+    
 
 
 class InvoiceExtractionResults(BaseModel):
@@ -34,6 +34,7 @@ class InvoiceExtractionResults(BaseModel):
     supplier_vat: str
     po_number: str
     payment_terms: str
+    currency: str
     bill_to: BillTo
     line_items: List[ReceiptLineItem]
     totals: ReceiptTotals

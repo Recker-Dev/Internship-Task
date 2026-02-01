@@ -13,26 +13,18 @@ def tertiary_matching(
     """
     Tertiary / Product-Only Fallback Matching (Greedy):
     - Used when invoice has no PO reference or supplier mismatch.
-    - Matches POs based solely on fuzzy item description similarity.
-
-    Returns:
-        dict: {
-            "matched": bool,
-            "match_method": str,
-            "matched_po": dict or None,
-            "confidence": float or None,
-            "match_ratio": float or None,
-            "reason": str
-        }
+    - Collects top candidates to allow for agentic comparison and reasoning.
     """
 
     invoice_items_list = [item.model_dump() for item in invoice.line_items]
 
-    # Step 1: Find candidate POs by item description
+    # Step 1: Find candidate POs by item description (Board Search)
     candidate_pos = find_pos_by_item_desc(
         invoice_items=invoice_items_list,
         confidence_threshold=desc_confidence_threshold,
     )
+
+    candidates = []
 
     for po in candidate_pos:
         # Step 2: Pair invoice items to PO items (exact ID first, then fuzzy description)
@@ -46,20 +38,34 @@ def tertiary_matching(
 
         if match_ratio >= min_item_match_ratio:
             # Step 3: Compute confidence (scale 40-70%)
-            confidence = 0.4 + (match_ratio * 0.3)  # 0.4 → 0.7 scale
-            confidence = min(confidence, 0.7)
+            confidence = 0.4 + (match_ratio * 0.29)  # 0.4 → 0.69 scale
 
-            return {
-                "matched": True,
-                "match_method": "product_desc_only_fallback",
-                "matched_po": po,
-                "confidence": round(confidence, 2),
-                "match_ratio": match_ratio,
-                "pairing_result": pairing_result,
-                "reason": "No PO reference or supplier mismatch; product descriptions matched",
-            }
+            candidates.append(
+                {
+                    "matched": True,
+                    "match_method": "product_desc_only_fallback",
+                    "matched_po": po,
+                    "confidence": round(min(confidence, 0.69), 2),
+                    "match_ratio": match_ratio,
+                    "pairing_result": pairing_result,
+                    "reasoning": (
+                        f"Product-only match found for PO {po.get('po_number')}. "
+                        f"Identified {int(match_ratio*100)}% of items based on description similarity."
+                    ),
+                }
+            )
+
+    # Step 4: Rank candidates by confidence
+    candidates.sort(key=lambda x: x["confidence"], reverse=True)
+
+    if not candidates:
+        return {
+            "matched": False,
+            "reason": "No PO candidates met the 80% product match threshold",
+            "candidates": [],
+        }
 
     return {
-        "matched": False,
-        "reason": "No PO candidate met the item match threshold",
+        "matched": True,
+        "candidates": candidates[:3],  # Return top 3 for agent review
     }

@@ -8,17 +8,48 @@ def string_similarity(str1: str, str2: str) -> float:
 
 
 def within_date_window(invoice_date, po_date, window_range=14) -> bool:
-    """Returns bool based on whether given date is within the window range"""
-    if isinstance(po_date, str):
-        return (
-            abs((invoice_date - datetime.strptime(po_date, "%Y-%m-%d").date()).days)
-            <= window_range
-        )
+    """Returns bool based on whether the given date is within the window range (in days)"""
+    # Convert invoice_date if it's a string
+    if isinstance(invoice_date, str):
+        invoice_date = datetime.strptime(invoice_date, "%Y-%m-%d").date()
+    elif not isinstance(invoice_date, date):
+        raise TypeError("invoice_date must be a string or datetime.date object")
 
+    # Convert po_date if it's a string
+    if isinstance(po_date, str):
+        po_date = datetime.strptime(po_date, "%Y-%m-%d").date()
+    elif not isinstance(po_date, date):
+        raise TypeError("po_date must be a string or datetime.date object")
+
+    # Check if absolute difference in days is within the window
     return abs((invoice_date - po_date).days) <= window_range
 
 
-def check_items_desc_match(invoice_items_list, po_items_list, similarity_threshold=0.7):
+def get_date_window_variation(invoice_date, po_date) -> int:
+    # Convert invoice_date if it's a string
+    if isinstance(invoice_date, str):
+        invoice_date = datetime.strptime(invoice_date, "%Y-%m-%d").date()
+    elif not isinstance(invoice_date, date):
+        raise TypeError("invoice_date must be a string or datetime.date object")
+
+    # Convert po_date if it's a string
+    if isinstance(po_date, str):
+        po_date_obj = datetime.strptime(po_date, "%Y-%m-%d").date()
+    elif isinstance(po_date, date):
+        po_date_obj = po_date
+    else:
+        raise TypeError("po_date must be a string or datetime.date object")
+
+    # Return absolute difference in days
+    return abs((invoice_date - po_date_obj).days)
+
+
+def check_items_desc_match(
+    invoice_items_list,
+    po_items_list,
+    similarity_threshold=0.7,
+    strictly_desc_check=False,
+):
     matched_count = 0
     used_po_key_signatures = set()
 
@@ -43,7 +74,11 @@ def check_items_desc_match(invoice_items_list, po_items_list, similarity_thresho
                 continue
 
             # Exact item_id match
-            if inv_item_id and po_item.get("item_id", "") == inv_item_id:
+            if (
+                not strictly_desc_check
+                and inv_item_id
+                and po_item.get("item_id", "") == inv_item_id
+            ):
                 best_match_key = key
                 best_score = 1.0
                 break
@@ -313,40 +348,33 @@ def validate_item_price(invoice_item, po_item, math_error_tolerance=0.01):
 
 
 def validate_total_variance(
-    invoice_total, po_total, max_variance=5, max_percent_variance=1
+    invoice_total,
+    invoice_subtotal,
+    invoice_vat_amount,
+    po_total,
+    max_variance=5.0,
+    max_percent_variance=1.0,
 ):
     """
-    Validates if the total variance between the invoice and PO is within acceptable limits.
-
-    Args:
-        invoice_total (float): The total amount from the invoice.
-        po_total (float): The total amount from the purchase order.
-        max_variance (float): The maximum allowable total variance (default is 5).
-        max_percent_variance (float): The maximum allowable percentage variance (default is 1%).
-
-    Returns:
-        dict: A dictionary containing:
-            - "valid": (bool) Whether the total variance is within acceptable limits.
-            - "total_variance": (float) The absolute total variance.
-            - "total_variance_percent": (float) The percentage total variance.
+    Validates financial reconciliation when PO only provides a flat Total.
     """
-    if po_total is None or invoice_total is None:
-        return {"valid": False, "reason": "missing_total"}
 
-    total_variance = abs(invoice_total - po_total)
-    total_variance_percent = (total_variance / po_total) * 100 if po_total else None
+    # 1. Direct Comparison
+    total_diff = abs(invoice_total - po_total)
+    total_diff_pct = (total_diff / po_total) * 100 if po_total else 0
 
-    valid = total_variance <= max_variance or (
-        total_variance_percent is not None
-        and total_variance_percent <= max_percent_variance
-    )
+    # Within £5 OR 1%
+    is_valid = total_diff <= max_variance or total_diff_pct <= max_percent_variance
+
+    # 2. Internal Math Check (For auditing/flagging purposes only)
+    # This detects if the supplier's PDF has a typo in its own addition
+    computed_total = (invoice_subtotal or 0) + (invoice_vat_amount or 0)
+    math_error_on_invoice = abs(computed_total - invoice_total) > 0.05
 
     return {
-        "valid": valid,
-        "total_variance": round(total_variance, 2),
-        "total_variance_percent": (
-            round(total_variance_percent, 2)
-            if total_variance_percent is not None
-            else None
-        ),
+        "invoice_total_is_valid": is_valid,
+        "math_error_on_invoice": math_error_on_invoice,
+        "variance_amount": round(total_diff, 2),
+        "variance_percent": round(total_diff_pct, 2),
+        "invoice_internal_diff": round(abs(computed_total - invoice_total), 2),
     }

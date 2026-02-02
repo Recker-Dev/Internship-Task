@@ -87,10 +87,19 @@ class TotalAmountVarianceDiscrepancy(BaseDiscrepancy):
 
     @model_validator(mode="after")
     def evaluate_variance(self):
-        # High Priority Rule #3: Variance > 10%
+        # High Priority: Escalate if variance > 10%
         if abs(self.variance_percent) > 10.0:
             self.severity = "high"
             self.recommended_action = "escalate_to_human"
+        # Auto-Approve if within £5 OR 1% of PO total (whichever is smaller)
+        elif abs(self.variance_amount) <= 5 or abs(self.variance_percent) <= 1.0:
+            self.severity = "low"
+            self.recommended_action = "auto_approve"
+        # Otherwise, flag for review
+        else:
+            self.severity = "medium"
+            self.recommended_action = "flag_for_review"
+
         return self
 
 

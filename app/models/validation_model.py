@@ -11,6 +11,20 @@ from app.models.discrepancies_models.ValidationDiscrepanices import (
 import uuid
 
 
+class LineItemPriceVariation(BaseModel):
+    item_code: str
+    item_desc: str
+    variance_amount: float
+    variance_percent: float
+    within_tolerance: bool
+
+
+class TotalPriceVariation(BaseModel):
+    variance_amount: float
+    variance_percent: float
+    within_tolerance: bool
+
+
 class ValidationAgentOutput(BaseModel):
     """
     Output from the Validation Agent.
@@ -23,6 +37,13 @@ class ValidationAgentOutput(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
     )
     status: Literal["clean", "minor failures", "critical failures"]
+
+    total_variance: TotalPriceVariation = TotalPriceVariation(
+        variance_amount=0.0, variance_percent=0.0, within_tolerance=True
+    )
+
+    line_item_total_variance: Optional[LineItemPriceVariation] = None
+    
     # Narrative Evidence for the Reasoning Agent
     agent_reasoning: str = Field(
         ...,

@@ -14,7 +14,7 @@ class AlternativeMatch(BaseModel):
 
 
 class MatchingAgentOutput(BaseModel):
-    matched_po: Optional[str] = None
+    matched_po: Optional[str] = Field(..., description="The PO Number with the max confidence")
 
     po_match_confidence: float = Field(
         ...,
@@ -99,4 +99,22 @@ class MatchingAgentOutput(BaseModel):
                 d.suggested_po_match_confidence = self.po_match_confidence
                 # Trigger the child's logic to re-evaluate the action
                 d._compute_recommended_action()
+        return self
+
+    ## Validator ensures a valid PO_Number is picked from the top-select if base is null
+    @model_validator(mode="after")
+    def sync_po_number(self):
+        if self.matched_po:
+            return self
+
+        if self.alternative_matches and len(self.alternative_matches) > 0:
+            ## Sort wrt confidence
+            self.alternative_matches.sort(key=lambda x: x.confidence, reverse=True)
+
+            ## Grab 1st entry
+            first_entry = self.alternative_matches[0]
+
+            ## Set its PO as global PO.
+            self.matched_po = first_entry.po_number
+
         return self

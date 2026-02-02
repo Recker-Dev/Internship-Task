@@ -24,11 +24,46 @@ def log_validation_agent_results(result: ValidationAgentOutput):
         "minor failures": "⚠️ MINOR FAILURES",
         "critical failures": "🚨 CRITICAL FAILURES",
     }
+
     print(f"\nAUDIT ID: {result.audit_id}")
     print(f"STATUS:   {status_colors.get(result.status, result.status.upper())}")
 
-    # 2. Discrepancy Breakdown
+    # 2. Financial Summary (NEW)
+    print(f"\n[FINANCIAL SUMMARY]")
+
+    if result.total_variance:
+        tolerance_icon = "✅" if result.total_variance.within_tolerance else "🚨"
+        print(
+            f"  {tolerance_icon} TOTAL AMOUNT VARIANCE: "
+            f"{result.total_variance.variance_amount:+.2f} "
+            f"({result.total_variance.variance_percent:+.2f}%)"
+        )
+        print(
+            f"     Within Tolerance: {result.total_variance.within_tolerance}"
+        )
+    else:
+        print("  ⚪ No total amount variance analysis available.")
+
+    if result.line_item_total_variance:
+        tolerance_icon = "✅" if result.line_item_total_variance.within_tolerance else "⚠️"
+        print(
+            f"\n  {tolerance_icon} LINE ITEM AGGREGATE VARIANCE"
+        )
+        print(
+            f"     Item: {result.line_item_total_variance.item_desc} "
+            f"(Code: {result.line_item_total_variance.item_code})"
+        )
+        print(
+            f"     Variance: {result.line_item_total_variance.variance_amount:+.2f} "
+            f"({result.line_item_total_variance.variance_percent:+.2f}%)"
+        )
+        print(
+            f"     Within Tolerance: {result.line_item_total_variance.within_tolerance}"
+        )
+
+    # 3. Discrepancy Breakdown
     print(f"\n[DETAILED DISCREPANCIES]")
+
     if not result.discrepancies:
         print("  ✅ No financial or line-item variances detected.")
     else:
@@ -44,7 +79,8 @@ def log_validation_agent_results(result: ValidationAgentOutput):
             if isinstance(d, LineItemPriceDiscrepancy):
                 print(f"     Item: {d.description} (ID: {d.item_id or 'N/A'})")
                 print(
-                    f"     Variance: {d.variance_percent:+.2f}% | Invoice: {d.invoice_unit_price} vs PO: {d.po_unit_price}"
+                    f"     Variance: {d.variance_percent:+.2f}% | "
+                    f"Invoice: {d.invoice_unit_price} vs PO: {d.po_unit_price}"
                 )
 
             # --- Line Item Quantity Logic ---
@@ -60,35 +96,43 @@ def log_validation_agent_results(result: ValidationAgentOutput):
             elif isinstance(d, SupplierNameDiscrepancy):
                 print(f"     Match Score: {d.similarity_score:.2%}")
                 print(
-                    f"     Inv Name: {d.invoice_supplier_name} | PO Name: {d.po_supplier_name}"
+                    f"     Inv Name: {d.invoice_supplier_name} | "
+                    f"PO Name: {d.po_supplier_name}"
                 )
 
             # --- Total Amount Logic ---
             elif isinstance(d, TotalAmountVarianceDiscrepancy):
                 print(
-                    f"     Global Variance: {d.variance_percent:+.2f}% ({d.variance_amount:+.2f} absolute)"
+                    f"     Global Variance: {d.variance_percent:+.2f}% "
+                    f"({d.variance_amount:+.2f} absolute)"
                 )
-                print(f"     Inv Total: {d.invoice_total} | PO Total: {d.po_total}")
+                print(
+                    f"     Inv Total: {d.invoice_total} | PO Total: {d.po_total}"
+                )
 
             # --- Arithmetic Logic ---
             elif isinstance(d, FinancialArithmeticDiscrepancy):
                 print(
-                    f"     Calculated: {d.calculated_expected_total} | Stated Total: {d.invoice_total_due}"
+                    f"     Calculated: {d.calculated_expected_total} | "
+                    f"Stated Total: {d.invoice_total_due}"
                 )
                 print(
-                    f"     Breakdown: Subtotal({d.invoice_subtotal}) + VAT({d.invoice_vat_amount})"
+                    f"     Breakdown: Subtotal({d.invoice_subtotal}) + "
+                    f"VAT({d.invoice_vat_amount})"
                 )
 
             # --- Unexpected Item Logic ---
             elif isinstance(d, UnexpectedItemDiscrepancy):
                 print(f"     Surprise Item: {d.item_description}")
-                print(f"     Qty: {d.item_quantity} | Line Total: {d.item_total}")
+                print(
+                    f"     Qty: {d.item_quantity} | "
+                    f"Line Total: {d.item_total}"
+                )
 
             print(f"     Action: {d.recommended_action.upper()}")
 
-    # 3. Agent Reasoning (The Narrative)
+    # 4. Agent Reasoning
     print(f"\n[AGENT REASONING]")
-    # Wrap text if necessary, but here we just print the breakdown
     print(f"  {result.agent_reasoning}")
 
     print("\n" + "═" * 60 + "\n")

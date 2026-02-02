@@ -16,7 +16,6 @@ def validate_invoice_wrt_po(
 ):
     # Exit if no valid matched_po_number to validate against
     po = find_po_by_number(matched_po_number)
-    result = {}
 
     if po is None:
         return {

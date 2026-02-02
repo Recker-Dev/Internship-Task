@@ -6,10 +6,10 @@ from pprint import pprint
 
 async def main():
     result = await compiled_graph.ainvoke(
-        GraphState(file_name="Invoice_4_Price_Trap.pdf")
+        GraphState(file_name="Invoice_5_Missing_PO.pdf")
     )
 
-    pprint(result["discrepancies"])
+    pprint(result["resolution_agent_state"])
 
 
 if __name__ == "__main__":

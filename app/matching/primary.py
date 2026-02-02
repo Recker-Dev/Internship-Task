@@ -97,7 +97,7 @@ def primary_matching(
         po_total=po.get("total"),
     )
 
-    if not total_check["valid"]:
+    if not total_check["invoice_total_is_valid"]:
         return {
             "matched": False,
             "reason": "total_variance_exceeded",

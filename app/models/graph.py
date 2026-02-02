@@ -1,4 +1,4 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Literal
 from typing_extensions import Annotated
 from pydantic import BaseModel
 import operator
@@ -6,6 +6,7 @@ from app.models.invoice_extraction_model import InvoiceExtractionResults
 from app.models.document_extraction_model import DocumentIntelligenceAgentOutput
 from app.models.matching_model import MatchingAgentOutput
 from app.models.validation_model import ValidationAgentOutput
+from app.models.resolution_model import ResolutionAgentOutput
 
 from app.models.discrepancies_models.DocumentIntelligenceDiscrepancies import (
     LowExtractionConfidenceDiscrepancy,
@@ -29,10 +30,20 @@ from app.models.discrepancies_models.ValidationDiscrepanices import (
 
 class GraphState(BaseModel):
     file_name: str
+    last_node_triggered: Optional[
+        Literal[
+            "document_intelligence_node",
+            "po_matching_node",
+            "audit_and_validation_node",
+            "resolution_node",
+        ]
+    ] = None
+    early_exit: Optional[bool] = False
     extracted_invoice_results: Optional[InvoiceExtractionResults] = None
     document_intelligence_agent_state: Optional[DocumentIntelligenceAgentOutput] = None
     matching_agent_state: Optional[MatchingAgentOutput] = None
     audit_validation_agent_state: Optional[ValidationAgentOutput] = None
+    resolution_agent_state: Optional[ResolutionAgentOutput] = None
     discrepancies: Annotated[
         List[
             Union[
@@ -50,5 +61,5 @@ class GraphState(BaseModel):
                 UnexpectedItemDiscrepancy,
             ]
         ],
-        operator.add, ## Enables auto append
+        operator.add,  ## Enables auto append
     ] = []

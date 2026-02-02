@@ -364,7 +364,7 @@ def validate_total_variance(
     total_diff_pct = (total_diff / po_total) * 100 if po_total else 0
 
     # Within £5 OR 1%
-    is_valid = total_diff <= max_variance or total_diff_pct <= max_percent_variance
+    is_valid = total_diff <= max_variance and total_diff_pct <= max_percent_variance
 
     # 2. Internal Math Check (For auditing/flagging purposes only)
     # This detects if the supplier's PDF has a typo in its own addition

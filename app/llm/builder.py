@@ -9,6 +9,7 @@ from app.core.config import (
     OLLAMA_MODEL,
     GOOGLE_MODEL,
     GROQ_MODEL,
+    GROQ_OCR_MODEL,
 )
 
 T = TypeVar("T", bound=BaseModel)
@@ -97,6 +98,39 @@ class GroqStructuredLLM:
         return parse_structured_output(content, output_model)
 
 
+### Groq Implementation
+class GroqImageLLM:
+    def __init__(self, api_key: str, model: str) -> None:
+        self.client = Groq(api_key=api_key)
+        self.model = model
+
+    async def invoke(
+        self,
+        request: str,
+        base64_image: str,
+    ) -> str | None:
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": f"{request}"},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}",
+                            },
+                        },
+                    ],
+                }
+            ],
+        )
+
+        content = completion.choices[0].message.content
+        return content
+
+
 class LLMProviderFactory:
     @staticmethod
     def ollama() -> StructuredLLM:
@@ -112,3 +146,7 @@ class LLMProviderFactory:
     @staticmethod
     def groq() -> StructuredLLM:
         return GroqStructuredLLM(api_key=GROQ_API_KEY, model=GROQ_MODEL)
+
+    @staticmethod
+    def groqImage():
+        return GroqImageLLM(api_key=GROQ_API_KEY, model=GROQ_OCR_MODEL)

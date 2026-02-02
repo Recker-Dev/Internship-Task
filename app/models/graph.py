@@ -30,6 +30,8 @@ from app.models.discrepancies_models.ValidationDiscrepanices import (
 
 class GraphState(BaseModel):
     file_name: str
+    file_size_kb: Optional[float] = None
+    page_count: Optional[int] = None
     last_node_triggered: Optional[
         Literal[
             "document_intelligence_node",

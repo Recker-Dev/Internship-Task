@@ -1,15 +1,42 @@
 import asyncio
+from pprint import pprint
+
+from pydantic import ValidationError
 from app.workflow.graph import compiled_graph
 from app.models.graph import GraphState
-from pprint import pprint
 
 
 async def main():
-    result = await compiled_graph.ainvoke(
-        GraphState(file_name="Invoice_5_Missing_PO.pdf")
-    )
+    file_name = "Invoice_2_Scanned.pdf"
 
-    pprint(result["resolution_agent_state"])
+    try:
+        initial_state = GraphState(file_name=file_name)
+
+        print(f"--- Starting Workflow for: {file_name} ---")
+        result = await compiled_graph.ainvoke(initial_state)
+        print("--- Workflow Completed Successfully ---")
+
+        pprint(result)
+
+    except ValidationError as e:
+        print(f"[Schema Error]: State validation failed.")
+        for error in e.errors():
+            print(f"  - Field {error['loc']}: {error['msg']}")
+
+    except FileNotFoundError as e:
+        print(f"[File Error]: Could not locate the document. {e}")
+
+    except TypeError as e:
+        print(f"[Type Error]: An operation was performed on an incompatible type. {e}")
+
+    except ValueError as e:
+        print(f"[Value Error]: Received an inappropriate value. {e}")
+
+    except RuntimeError as e:
+        print(f"[Runtime Error]: An error occurred during graph execution. {e}")
+
+    except Exception as e:
+        print(f"[Unexpected Error]: {type(e).__name__} - {str(e)}")
 
 
 if __name__ == "__main__":

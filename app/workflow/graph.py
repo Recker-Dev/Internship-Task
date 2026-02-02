@@ -31,16 +31,18 @@ async def document_extraction_and_validation_node(
     file_name = state.file_name
 
     # Extract the text from the given file
-    extracted_text = process_file(file_name)
+    file_processing_result = await process_file(file_name)
 
     # Validate the invoice results
-    result = await validate_invoice(extracted_text)
+    result = await validate_invoice(file_processing_result["content"])
 
     # --- LOG CONFIDENCE SCORES & REASONING ---
     log_document_intelligence_agent_results(result)
 
     # Assuming the response is what you want
     return {
+        "file_size_kb": file_processing_result["file_size_kb"],
+        "page_count": file_processing_result["page_count"],
         "extracted_invoice_results": result.extracted_data,
         "document_intelligence_agent_state": result,
         "discrepancies": result.discrepancies or [],

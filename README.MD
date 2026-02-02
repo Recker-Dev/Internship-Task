@@ -7,10 +7,8 @@ Here’s a clean, copy-pasteable **README.md** tailored to a **uv** project with
 This project is a Python application managed with **uv**. It processes invoice PDF files one at a time via a configurable entry point.
 
 ## Prerequisites
-
-- Python 3.9+ (recommended)
 - `uv` installed
-
+- `uv` will sync both Python Version and dependencies used.
 ---
 
 The main module is run using:

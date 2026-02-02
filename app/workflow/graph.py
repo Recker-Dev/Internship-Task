@@ -180,11 +180,6 @@ def should_continue(state: GraphState) -> bool:
                 ):
                     state.early_exit = True
                     return False
-                if isinstance(d, LowExtractionConfidenceDiscrepancy):
-                    for entry in d.fields:
-                        if entry.recommended_action == "escalate_to_human":
-                            state.early_exit = True
-                            return False
 
     elif state.last_node_triggered == "po_matching_node":
         ## Check a valid PO Number exist for validation agent
@@ -199,18 +194,6 @@ def should_continue(state: GraphState) -> bool:
                 )
                 state.early_exit = True
                 return False
-
-        ## Check for discrepancies triggered by po_matching_node
-        if len(state.discrepancies) > 0:
-            for d in state.discrepancies:
-                if (
-                    isinstance(d, POReferenceDiscrepancy)
-                    or isinstance(d, MultiplePOCandidatesDiscrepancy)
-                    or isinstance(d, PartialDeliveryDiscrepancy)
-                ):
-                    if d.recommended_action == "escalate_to_human":
-                        return False
-
     return True
 
 

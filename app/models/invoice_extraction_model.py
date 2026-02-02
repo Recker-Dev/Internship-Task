@@ -23,12 +23,14 @@ class ReceiptTotals(BaseModel):
     vat_rate: float
     vat_amount: float
     total_due: float
-    
 
 
 class InvoiceExtractionResults(BaseModel):
     invoice_number: str
-    invoice_date: date
+    invoice_date: date = Field(
+        ...,
+        description="A DateTime Object created from the date extracted from the receipt",
+    )
     supplier_name: str
     supplier_address: str
     supplier_vat: str
@@ -38,8 +40,3 @@ class InvoiceExtractionResults(BaseModel):
     bill_to: BillTo
     line_items: List[ReceiptLineItem]
     totals: ReceiptTotals
-
-
-
-
-

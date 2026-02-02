@@ -7,7 +7,11 @@ from app.utils.helpers import format_workflow_output
 
 
 async def main():
-    file_name = "Invoice_2_Scanned.pdf"
+    # file_name = "Invoice_1_Baseline.pdf"
+    # file_name = "Invoice_2_Scanned.pdf"
+    # file_name = "Invoice_3_Different_Format.pdf"
+    # file_name = "Invoice_4_Price_Trap.pdf"
+    file_name = "Invoice_5_Missing_PO.pdf"
 
     try:
         initial_state = GraphState(file_name=file_name)

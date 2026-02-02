@@ -58,6 +58,8 @@ uv run -m app.main
 │   └── main.py
 ├── docs/
 │   └── ...files
+├── output/
+│   └── [Generated Output JSONs]
 ├── .env.example
 ├── .gitignore
 ├── .python-version

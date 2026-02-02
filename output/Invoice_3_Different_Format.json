@@ -1,0 +1,129 @@
+{
+  "invoice_metadata": {
+    "invoice_id": "MC-INV-3421",
+    "net_processing_time_sec": 8.497,
+    "document_info": {
+      "filename": "Invoice_3_Different_Format.pdf",
+      "file_size_kb": 2.93,
+      "page_count": 1
+    }
+  },
+  "processing_results": {
+    "document_intelligence": {
+      "extracted_data": {
+        "invoice_number": "MC-INV-3421",
+        "invoice_date": "2024-01-22",
+        "supplier_name": "MedChem Ingredients Ltd",
+        "supplier_address": "Bristol Science Park, Bristol BS16 7FR",
+        "supplier_vat": "GB456789012",
+        "po_number": "PO-2024-003",
+        "payment_terms": "30 days net",
+        "currency": "GBP",
+        "bill_to": {
+          "company_name": "NIYAMRAI Limited",
+          "address": "Hayes Business Centre, Uxbridge, UB4 0NE, UK"
+        },
+        "line_items": [
+          {
+            "item_id": "MC-584",
+            "description": "Pregelatinized Starch",
+            "quantity": 200.0,
+            "unit": "kg",
+            "unit_price": 6.75,
+            "line_total": 1350.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "MC-215",
+            "description": "Gelatin Type A 200 Bloom",
+            "quantity": 50.0,
+            "unit": "kg",
+            "unit_price": 45.0,
+            "line_total": 2250.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "MC-376",
+            "description": "Lactose Monohydrate Mesh 200",
+            "quantity": 150.0,
+            "unit": "kg",
+            "unit_price": 11.2,
+            "line_total": 1680.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "MC-492",
+            "description": "Croscarmellose Sodium",
+            "quantity": 30.0,
+            "unit": "kg",
+            "unit_price": 28.5,
+            "line_total": 855.0,
+            "extraction_confidence": 0.98
+          }
+        ],
+        "totals": {
+          "subtotal": 6135.0,
+          "vat_rate": 0.2,
+          "vat_amount": 1227.0,
+          "total_due": 7362.0
+        }
+      },
+      "extraction_confidence": {
+        "overall": 0.98,
+        "invoice_number": 0.99,
+        "po_number": 0.99,
+        "line_items_avg": 0.98,
+        "totals": 0.99
+      },
+      "document_quality": "excellent",
+      "agent_reasoning": "All critical fields extracted with high confidence (>0.9). Currency is GBP as required. No negative amounts or credit note indicators. Document is clean and ready for processing.",
+      "discrepancies": []
+    },
+    "matching_results": {
+      "matched_po": "PO-2024-003",
+      "po_match_confidence": 0.97,
+      "match_method": "exact_po_reference",
+      "supplier_match": true,
+      "date_variance_days": 7,
+      "line_items_matched": 4,
+      "line_items_total": 4,
+      "match_rate": 1.0,
+      "alternative_matches": [],
+      "agent_reasoning": "Primary exact-po-reference match succeeded with 97% confidence; all 4 invoice items perfectly paired to PO items by item_id with zero variance, so no need to evaluate lower-tier matches.",
+      "discrepancies": []
+    },
+    "validation_results": {
+      "audit_id": "84eb5ae8-6a40-4f3a-9fc1-a300f32882ec",
+      "status": "clean",
+      "total_variance": {
+        "variance_amount": 0.0,
+        "variance_percent": 0.0,
+        "within_tolerance": true
+      },
+      "line_item_total_variance": null,
+      "agent_reasoning": "All invoice line items were matched to the PO with zero price or quantity variances. Supplier name similarity=0.9 (>=0.9 threshold). Invoice subtotal 6135 + VAT 1227 = total due 7362, matching PO total exactly. No discrepancies detected.",
+      "discrepancies": []
+    },
+    "resolution_action": {
+      "recommended_action": "auto_approve",
+      "confidence": 0.97,
+      "risk_level": "none",
+      "approval_criteria_met": [
+        "exact_po_match",
+        "all_items_match",
+        "high_extraction_confidence",
+        "verified_supplier",
+        "zero_variance"
+      ],
+      "human_review_required": false,
+      "reasoning": "Invoice passed all checks with zero discrepancies. Extraction confidence 98%, exact PO match (PO-2024-003) with 97% confidence, all 4 line items paired with zero variance, supplier verified, totals match exactly. No early exits or high-severity issues detected."
+    }
+  },
+  "discrepancies_found": [],
+  "agent_execution_trace": {
+    "document_intelligence_agent": 2.176,
+    "document_matching_agent": 2.027,
+    "auditing_and_validation_agent": 2.05,
+    "resolution_recommendation_agent": 2.244
+  }
+}

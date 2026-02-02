@@ -1,0 +1,193 @@
+{
+  "invoice_metadata": {
+    "invoice_id": "GPS-8842",
+    "net_processing_time_sec": 20.406,
+    "document_info": {
+      "filename": "Invoice_4_Price_Trap.pdf",
+      "file_size_kb": 3.04,
+      "page_count": 1
+    }
+  },
+  "processing_results": {
+    "document_intelligence": {
+      "extracted_data": {
+        "invoice_number": "GPS-8842",
+        "invoice_date": "2024-01-25",
+        "supplier_name": "Global Pharma Supply Co.",
+        "supplier_address": "International House, London EC2M 7PY",
+        "supplier_vat": "GB234567890",
+        "po_number": "PO-2024-004",
+        "payment_terms": "Net 30",
+        "currency": "GBP",
+        "bill_to": {
+          "company_name": "NIYAMRAI Limited",
+          "address": "Hayes Business Centre, Uxbridge UB4 0NE, United Kingdom"
+        },
+        "line_items": [
+          {
+            "item_id": "GPS-A101",
+            "description": "Ibuprofen BP 200mg",
+            "quantity": 100.0,
+            "unit": "kg",
+            "unit_price": 88.0,
+            "line_total": 8800.0,
+            "extraction_confidence": 0.95
+          },
+          {
+            "item_id": "GPS-E045",
+            "description": "Povidone K30 USP",
+            "quantity": 75.0,
+            "unit": "kg",
+            "unit_price": 22.0,
+            "line_total": 1650.0,
+            "extraction_confidence": 0.95
+          },
+          {
+            "item_id": "GPS-E067",
+            "description": "Sodium Starch Glycolate",
+            "quantity": 40.0,
+            "unit": "kg",
+            "unit_price": 19.5,
+            "line_total": 780.0,
+            "extraction_confidence": 0.95
+          }
+        ],
+        "totals": {
+          "subtotal": 11230.0,
+          "vat_rate": 20.0,
+          "vat_amount": 2246.0,
+          "total_due": 13476.0
+        }
+      },
+      "extraction_confidence": {
+        "overall": 0.95,
+        "invoice_number": 0.99,
+        "po_number": 0.99,
+        "line_items_avg": 0.95,
+        "totals": 0.99
+      },
+      "document_quality": "excellent",
+      "agent_reasoning": "All critical fields extracted with high confidence; currency is GBP as required; totals and line items are positive; no credit-note indicators detected.",
+      "discrepancies": []
+    },
+    "matching_results": {
+      "matched_po": "PO-2024-004",
+      "po_match_confidence": 0.85,
+      "match_method": "supplier_date_product",
+      "supplier_match": true,
+      "date_variance_days": 7,
+      "line_items_matched": 3,
+      "line_items_total": 3,
+      "match_rate": 1.0,
+      "alternative_matches": [],
+      "agent_reasoning": "PRIMARY_MATCH failed due to item-level unit-price variance (10% on GPS-A101), so the agent moved to SECONDARY_MATCH which succeeded with 0.85 confidence using supplier+date+product alignment. All 3 invoice items exactly overlap PO items by item_id, giving 100% line-item coverage. The 7-day date delta is within acceptable window. No other PO candidates were provided, so selection is unambiguous.",
+      "discrepancies": [
+        {
+          "type": "po_reference_anomaly",
+          "details": "PRIMARY_MATCH failed because invoice unit price for GPS-A101 (\u00a388) exceeds PO unit price (\u00a380) by 10%, breaching 2% tolerance.",
+          "detected_by": "matching",
+          "severity": "medium",
+          "suggested_po_number": "PO-2024-004",
+          "suggested_po_match_confidence": 0.85,
+          "recommended_action": "flag_for_review",
+          "reasoning": "Invoice lacked a valid PO reference at exact-match tier; fallback supplier-date-product match succeeded."
+        }
+      ]
+    },
+    "validation_results": {
+      "audit_id": "5aca24c7-c081-4125-a3e1-b62a302c513c",
+      "status": "minor failures",
+      "total_variance": {
+        "variance_amount": 300.0,
+        "variance_percent": 2.28,
+        "within_tolerance": true
+      },
+      "line_item_total_variance": {
+        "item_code": "GPS-A101",
+        "item_desc": "Ibuprofen BP 200mg",
+        "variance_amount": 800.0,
+        "variance_percent": 10.0,
+        "within_tolerance": true
+      },
+      "agent_reasoning": "All 3 invoice line items matched to the PO. GPS-A101 shows a 10% unit-price increase (\u00a388 vs \u00a380), exceeding 5% but staying within 15% tolerance; no rounding issue (<\u00a30.05). Quantities match exactly. No unexpected items. Invoice internal maths is correct. Total variance \u00a3300 (2.28%) is within 10% but exceeds \u00a35 and 1%, so flag for review.",
+      "discrepancies": [
+        {
+          "type": "line_item_price_variance",
+          "details": "Unit price variance 10.0% exceeds 5% threshold.",
+          "detected_by": "validation",
+          "severity": "medium",
+          "item_id": "GPS-A101",
+          "description": "Ibuprofen BP 200mg",
+          "invoice_unit_price": 88.0,
+          "po_unit_price": 80.0,
+          "variance_percent": 10.0,
+          "recommended_action": "flag_for_review"
+        },
+        {
+          "type": "total_amount_variance",
+          "details": "Invoice total \u00a313,476 vs PO total \u00a313,176: \u00a3300 (2.28%) variance.",
+          "detected_by": "validation",
+          "severity": "medium",
+          "invoice_total": 13476.0,
+          "po_total": 13176.0,
+          "variance_amount": 300.0,
+          "variance_percent": 2.28,
+          "recommended_action": "flag_for_review"
+        }
+      ]
+    },
+    "resolution_action": {
+      "recommended_action": "escalate_to_human",
+      "confidence": 0.85,
+      "risk_level": "medium",
+      "approval_criteria_met": [
+        "all_items_match",
+        "high_extraction_confidence",
+        "verified_supplier"
+      ],
+      "human_review_required": true,
+      "reasoning": "All critical fields extracted with high confidence and 100% line-item coverage to PO-2024-004, but three medium-severity discrepancies exist: (1) primary exact PO match failed due to 10% unit-price variance on GPS-A101, (2) unit price variance exceeds 5% threshold, and (3) total variance \u00a3300 (2.28%) exceeds 1% but stays within 15% tolerance. These cumulatively breach the 0-2 low-severity limit for auto-approval and trigger mandatory human review. (Complexity threshold: 3+ discrepancies reached)."
+    }
+  },
+  "discrepancies_found": [
+    {
+      "type": "po_reference_anomaly",
+      "details": "PRIMARY_MATCH failed because invoice unit price for GPS-A101 (\u00a388) exceeds PO unit price (\u00a380) by 10%, breaching 2% tolerance.",
+      "detected_by": "matching",
+      "severity": "medium",
+      "suggested_po_number": "PO-2024-004",
+      "suggested_po_match_confidence": 0.85,
+      "recommended_action": "flag_for_review",
+      "reasoning": "Invoice lacked a valid PO reference at exact-match tier; fallback supplier-date-product match succeeded."
+    },
+    {
+      "type": "line_item_price_variance",
+      "details": "Unit price variance 10.0% exceeds 5% threshold.",
+      "detected_by": "validation",
+      "severity": "medium",
+      "item_id": "GPS-A101",
+      "description": "Ibuprofen BP 200mg",
+      "invoice_unit_price": 88.0,
+      "po_unit_price": 80.0,
+      "variance_percent": 10.0,
+      "recommended_action": "flag_for_review"
+    },
+    {
+      "type": "total_amount_variance",
+      "details": "Invoice total \u00a313,476 vs PO total \u00a313,176: \u00a3300 (2.28%) variance.",
+      "detected_by": "validation",
+      "severity": "medium",
+      "invoice_total": 13476.0,
+      "po_total": 13176.0,
+      "variance_amount": 300.0,
+      "variance_percent": 2.28,
+      "recommended_action": "flag_for_review"
+    }
+  ],
+  "agent_execution_trace": {
+    "document_intelligence_agent": 4.258,
+    "document_matching_agent": 4.27,
+    "auditing_and_validation_agent": 4.51,
+    "resolution_recommendation_agent": 7.368
+  }
+}

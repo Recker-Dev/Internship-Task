@@ -1,0 +1,178 @@
+{
+  "invoice_metadata": {
+    "invoice_id": "EC-7721",
+    "net_processing_time_sec": 29.617,
+    "document_info": {
+      "filename": "Invoice_5_Missing_PO.pdf",
+      "file_size_kb": 3.06,
+      "page_count": 1
+    }
+  },
+  "processing_results": {
+    "document_intelligence": {
+      "extracted_data": {
+        "invoice_number": "EC-7721",
+        "invoice_date": "2024-01-28",
+        "supplier_name": "EuroChem Trading Ltd",
+        "supplier_address": "Manchester Business Park, M90 5EH",
+        "supplier_vat": "GB345678901",
+        "po_number": "N/A",
+        "payment_terms": "Net 30 Days",
+        "currency": "GBP",
+        "bill_to": {
+          "company_name": "NIYAMRAI Limited",
+          "address": "Hayes Business Centre, Uxbridge, UB4 0NE, UK"
+        },
+        "line_items": [
+          {
+            "item_id": "EC-M-440",
+            "description": "Mannitol Granular USP",
+            "quantity": 120.0,
+            "unit": "kg",
+            "unit_price": 14.5,
+            "line_total": 1740.0,
+            "extraction_confidence": 0.95
+          },
+          {
+            "item_id": "EC-T-892",
+            "description": "Talc Pharma Grade",
+            "quantity": 60.0,
+            "unit": "kg",
+            "unit_price": 8.8,
+            "line_total": 528.0,
+            "extraction_confidence": 0.95
+          },
+          {
+            "item_id": "EC-S-225",
+            "description": "Colloidal Silicon Dioxide",
+            "quantity": 25.0,
+            "unit": "kg",
+            "unit_price": 35.0,
+            "line_total": 875.0,
+            "extraction_confidence": 0.95
+          },
+          {
+            "item_id": "EC-H-667",
+            "description": "Hypromellose 2910",
+            "quantity": 80.0,
+            "unit": "kg",
+            "unit_price": 18.75,
+            "line_total": 1500.0,
+            "extraction_confidence": 0.95
+          }
+        ],
+        "totals": {
+          "subtotal": 4643.0,
+          "vat_rate": 20.0,
+          "vat_amount": 928.6,
+          "total_due": 5571.6
+        }
+      },
+      "extraction_confidence": {
+        "overall": 0.95,
+        "invoice_number": 0.98,
+        "po_number": 0.2,
+        "line_items_avg": 0.95,
+        "totals": 0.98
+      },
+      "document_quality": "average",
+      "agent_reasoning": "Invoice currency is GBP so no currency mismatch. All totals are positive and document is titled 'INVOICE' so not a credit note. However, the PO number field is explicitly 'N/A', which violates the Critical Fields rule requiring a valid PO number. Hence flagged for review.",
+      "discrepancies": [
+        {
+          "type": "low_extraction_confidence",
+          "details": "Critical field PO number has invalid placeholder value 'N/A'",
+          "detected_by": "document_intelligence",
+          "fields": [
+            {
+              "field": "po_number",
+              "field_existence_confidence": 0.2,
+              "severity": "high",
+              "recommended_action": "escalate_to_human",
+              "reasoning": "Extracted value is 'N/A' which is an invalid placeholder for a required critical field"
+            }
+          ]
+        }
+      ]
+    },
+    "matching_results": {
+      "matched_po": "PO-2024-005",
+      "po_match_confidence": 0.85,
+      "match_method": "supplier_date_product",
+      "supplier_match": true,
+      "date_variance_days": 6,
+      "line_items_matched": 4,
+      "line_items_total": 4,
+      "match_rate": 1.0,
+      "alternative_matches": [],
+      "agent_reasoning": "PRIMARY_MATCH failed because the invoice lacked a usable PO reference (no_dirct_po_match). SECONDARY_MATCH succeeded with a single high-confidence candidate (0.85) that shows 100% item-level alignment and correct supplier/date context. All four line items matched perfectly by item_id.",
+      "discrepancies": [
+        {
+          "type": "po_reference_anomaly",
+          "details": "Invoice EC-7721 did not contain a valid PO reference (po_number='N/A'). PO-2024-005 was identified via supplier + date + product fallback matching.",
+          "detected_by": "matching",
+          "severity": "medium",
+          "suggested_po_number": "PO-2024-005",
+          "suggested_po_match_confidence": 0.85,
+          "recommended_action": "flag_for_review",
+          "reasoning": "PRIMARY_MATCH failed due to missing PO reference; fallback to SECONDARY_MATCH succeeded with 0.85 confidence."
+        }
+      ]
+    },
+    "validation_results": {
+      "audit_id": "95b2763d-862a-4e32-82b5-a496de4ca093",
+      "status": "clean",
+      "total_variance": {
+        "variance_amount": 0.0,
+        "variance_percent": 0.0,
+        "within_tolerance": true
+      },
+      "line_item_total_variance": null,
+      "agent_reasoning": "All 4 invoice line items matched perfectly to the PO: quantities, unit prices and line totals identical (0 % variance). Supplier name exact match (similarity 1.0). Invoice internal arithmetic correct (subtotal + VAT = total due). Overall invoice total equals PO total with 0.0 % variance. No unmatched or unexpected items.",
+      "discrepancies": []
+    },
+    "resolution_action": {
+      "recommended_action": "escalate_to_human",
+      "confidence": 0.85,
+      "risk_level": "high",
+      "approval_criteria_met": [
+        "all_items_match",
+        "verified_supplier",
+        "zero_variance"
+      ],
+      "human_review_required": true,
+      "reasoning": "Invoice fails the mandatory escalation rule: one discrepancy is flagged as high severity (critical field PO number = 'N/A'). Although secondary matching succeeded with 85 % confidence, perfect item alignment, and zero variance, the absence of a valid extracted PO reference triggers an automatic human review."
+    }
+  },
+  "discrepancies_found": [
+    {
+      "type": "low_extraction_confidence",
+      "details": "Critical field PO number has invalid placeholder value 'N/A'",
+      "detected_by": "document_intelligence",
+      "fields": [
+        {
+          "field": "po_number",
+          "field_existence_confidence": 0.2,
+          "severity": "high",
+          "recommended_action": "escalate_to_human",
+          "reasoning": "Extracted value is 'N/A' which is an invalid placeholder for a required critical field"
+        }
+      ]
+    },
+    {
+      "type": "po_reference_anomaly",
+      "details": "Invoice EC-7721 did not contain a valid PO reference (po_number='N/A'). PO-2024-005 was identified via supplier + date + product fallback matching.",
+      "detected_by": "matching",
+      "severity": "medium",
+      "suggested_po_number": "PO-2024-005",
+      "suggested_po_match_confidence": 0.85,
+      "recommended_action": "flag_for_review",
+      "reasoning": "PRIMARY_MATCH failed due to missing PO reference; fallback to SECONDARY_MATCH succeeded with 0.85 confidence."
+    }
+  ],
+  "agent_execution_trace": {
+    "document_intelligence_agent": 5.147,
+    "document_matching_agent": 2.845,
+    "auditing_and_validation_agent": 18.53,
+    "resolution_recommendation_agent": 3.095
+  }
+}

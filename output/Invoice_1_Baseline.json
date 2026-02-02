@@ -1,0 +1,129 @@
+{
+  "invoice_metadata": {
+    "invoice_id": "INV-2024-1001",
+    "net_processing_time_sec": 13.783,
+    "document_info": {
+      "filename": "Invoice_1_Baseline.pdf",
+      "file_size_kb": 2.76,
+      "page_count": 1
+    }
+  },
+  "processing_results": {
+    "document_intelligence": {
+      "extracted_data": {
+        "invoice_number": "INV-2024-1001",
+        "invoice_date": "2024-01-15",
+        "supplier_name": "PharmaChem Supplies Ltd",
+        "supplier_address": "Unit 12, Industrial Estate, Manchester M20 4XY",
+        "supplier_vat": "GB123456789",
+        "po_number": "PO-2024-001",
+        "payment_terms": "Net 30 Days",
+        "currency": "GBP",
+        "bill_to": {
+          "company_name": "NIYAMRAI Limited",
+          "address": "Hayes Business Centre, Uxbridge, UB4 0NE, United Kingdom"
+        },
+        "line_items": [
+          {
+            "item_id": "API-001",
+            "description": "Paracetamol BP 500mg",
+            "quantity": 50.0,
+            "unit": "kg",
+            "unit_price": 125.0,
+            "line_total": 6250.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "EXC-023",
+            "description": "Microcrystalline Cellulose",
+            "quantity": 100.0,
+            "unit": "kg",
+            "unit_price": 8.5,
+            "line_total": 850.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "EXC-045",
+            "description": "Magnesium Stearate Ph Eur",
+            "quantity": 25.0,
+            "unit": "kg",
+            "unit_price": 24.0,
+            "line_total": 600.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "COL-012",
+            "description": "Titanium Dioxide E171",
+            "quantity": 15.0,
+            "unit": "kg",
+            "unit_price": 18.5,
+            "line_total": 277.5,
+            "extraction_confidence": 0.98
+          }
+        ],
+        "totals": {
+          "subtotal": 7977.5,
+          "vat_rate": 0.2,
+          "vat_amount": 1595.5,
+          "total_due": 9573.0
+        }
+      },
+      "extraction_confidence": {
+        "overall": 0.98,
+        "invoice_number": 0.99,
+        "po_number": 0.99,
+        "line_items_avg": 0.98,
+        "totals": 0.99
+      },
+      "document_quality": "excellent",
+      "agent_reasoning": "All critical fields extracted with high confidence (>0.9). Currency is GBP (no mismatch). Totals and line items are positive (not a credit note). No discrepancy rules triggered; invoice is clean.",
+      "discrepancies": []
+    },
+    "matching_results": {
+      "matched_po": "PO-2024-001",
+      "po_match_confidence": 0.97,
+      "match_method": "exact_po_reference",
+      "supplier_match": true,
+      "date_variance_days": 5,
+      "line_items_matched": 4,
+      "line_items_total": 4,
+      "match_rate": 1.0,
+      "alternative_matches": [],
+      "agent_reasoning": "Primary exact-po-reference match succeeded with 97% confidence; all four line items perfectly paired by item_id with zero variance, supplier verified, 5-day date variance within tolerance.",
+      "discrepancies": []
+    },
+    "validation_results": {
+      "audit_id": "018e4796-df54-48e4-91ee-46f07d18fc28",
+      "status": "clean",
+      "total_variance": {
+        "variance_amount": 0.0,
+        "variance_percent": 0.0,
+        "within_tolerance": true
+      },
+      "line_item_total_variance": null,
+      "agent_reasoning": "All 4 invoice line items matched to PO items exactly with zero price/quantity variances. Supplier name similarity is 100%. Invoice internal math is correct (subtotal + VAT = total due). No unmatched items. Total invoice amount equals PO total.",
+      "discrepancies": []
+    },
+    "resolution_action": {
+      "recommended_action": "auto_approve",
+      "confidence": 0.98,
+      "risk_level": "none",
+      "approval_criteria_met": [
+        "exact_po_match",
+        "all_items_match",
+        "high_extraction_confidence",
+        "verified_supplier",
+        "zero_variance"
+      ],
+      "human_review_required": false,
+      "reasoning": "Invoice passed every automated check: extraction confidence 98%, exact PO match with 97% confidence, supplier verified, all four line items paired with zero variance, totals reconcile, no discrepancies detected. Meets all approval criteria for straight-through processing."
+    }
+  },
+  "discrepancies_found": [],
+  "agent_execution_trace": {
+    "document_intelligence_agent": 3.363,
+    "document_matching_agent": 2.635,
+    "auditing_and_validation_agent": 4.604,
+    "resolution_recommendation_agent": 3.181
+  }
+}

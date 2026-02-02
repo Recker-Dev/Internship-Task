@@ -1,0 +1,120 @@
+{
+  "invoice_metadata": {
+    "invoice_id": "BA-2024-2156",
+    "net_processing_time_sec": 15.618,
+    "document_info": {
+      "filename": "Invoice_2_Scanned.pdf",
+      "file_size_kb": 102.89,
+      "page_count": 1
+    }
+  },
+  "processing_results": {
+    "document_intelligence": {
+      "extracted_data": {
+        "invoice_number": "BA-2024-2156",
+        "invoice_date": "2024-01-18",
+        "supplier_name": "BioActive Materials UK",
+        "supplier_address": "Riverside Business Park, Leeds LS11 5QT",
+        "supplier_vat": "GB987654321",
+        "po_number": "PO-2024-002",
+        "payment_terms": "Net 30 Days",
+        "currency": "GBP",
+        "bill_to": {
+          "company_name": "NIYAMRAI Limited",
+          "address": "Hayes Business Centre, Uxbridge, UB4 0NE, United Kingdom"
+        },
+        "line_items": [
+          {
+            "item_id": "BIO-751",
+            "description": "Ascorbic Acid USP",
+            "quantity": 75.0,
+            "unit": "kg",
+            "unit_price": 32.0,
+            "line_total": 2400.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "BIO-822",
+            "description": "Citric Acid Anhydrous",
+            "quantity": 100.0,
+            "unit": "kg",
+            "unit_price": 12.5,
+            "line_total": 1250.0,
+            "extraction_confidence": 0.98
+          },
+          {
+            "item_id": "BIO-943",
+            "description": "Sodium Benzoate",
+            "quantity": 50.0,
+            "unit": "kg",
+            "unit_price": 15.8,
+            "line_total": 790.0,
+            "extraction_confidence": 0.98
+          }
+        ],
+        "totals": {
+          "subtotal": 4440.0,
+          "vat_rate": 0.2,
+          "vat_amount": 888.0,
+          "total_due": 5328.0
+        }
+      },
+      "extraction_confidence": {
+        "overall": 0.98,
+        "invoice_number": 0.99,
+        "po_number": 0.97,
+        "line_items_avg": 0.98,
+        "totals": 0.99
+      },
+      "document_quality": "excellent",
+      "agent_reasoning": "All critical fields extracted with high confidence (>0.97). Currency is GBP as required. Totals are positive and document is a standard invoice, so no credit-note triggers apply.",
+      "discrepancies": []
+    },
+    "matching_results": {
+      "matched_po": "PO-2024-002",
+      "po_match_confidence": 0.97,
+      "match_method": "exact_po_reference",
+      "supplier_match": true,
+      "date_variance_days": 6,
+      "line_items_matched": 3,
+      "line_items_total": 3,
+      "match_rate": 1.0,
+      "alternative_matches": [],
+      "agent_reasoning": "PRIMARY_MATCH succeeded via exact_po_reference with 0.97 confidence; all 3 invoice line items paired perfectly with the PO by item_id, quantities, unit prices and totals match exactly; no lower-tier matches evaluated per policy.",
+      "discrepancies": []
+    },
+    "validation_results": {
+      "audit_id": "2c06733b-9d08-4fff-a047-42ad1acd23cf",
+      "status": "clean",
+      "total_variance": {
+        "variance_amount": 0.0,
+        "variance_percent": 0.0,
+        "within_tolerance": true
+      },
+      "line_item_total_variance": null,
+      "agent_reasoning": "All 3 invoice line items matched perfectly to the PO: quantities, unit prices, and line totals identical. Supplier name similarity is 1.0. Invoice internal arithmetic is correct (subtotal + VAT = total due). No unmatched items. Total variance vs PO is \u00a30 (0%).",
+      "discrepancies": []
+    },
+    "resolution_action": {
+      "recommended_action": "auto_approve",
+      "confidence": 0.98,
+      "risk_level": "none",
+      "approval_criteria_met": [
+        "exact_po_match",
+        "all_items_match",
+        "high_extraction_confidence",
+        "verified_supplier",
+        "zero_variance"
+      ],
+      "human_review_required": false,
+      "reasoning": "Extraction confidence 98% and all critical fields >97%. Matching found exact PO reference with 97% confidence and 100% line-item match. Validation shows zero variance (\u00a30, 0%) and supplier name similarity 1.0. No discrepancies detected. All business rules for auto-approval satisfied."
+    }
+  },
+  "discrepancies_found": [],
+  "agent_execution_trace": {
+    "document_intelligence_agent": 5.283,
+    "document_matching_agent": 5.217,
+    "auditing_and_validation_agent": 3.071,
+    "resolution_recommendation_agent": 2.047
+  }
+}

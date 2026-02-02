@@ -2,6 +2,7 @@ from datetime import date, datetime
 from difflib import SequenceMatcher
 import json
 from app.models.graph import GraphState
+from pathlib import Path
 
 
 
@@ -420,3 +421,21 @@ def format_workflow_output(result_dict: dict) -> str:
 
     # Serialize to JSON with formatting
     return json.dumps(final_output, indent=2, default=str)
+
+
+def save_json_output(data: str, file_name: str):
+    """
+    Save formatted JSON string output to a file.
+
+    Args:
+        data (str): Pre-formatted JSON string
+        file_name (str): Source file name (e.g. Invoice_1_Baseline.pdf)
+    """
+    ROOT_DIR = Path(__file__).resolve().parent.parent.parent  # Root Level
+    output_path = ROOT_DIR / "output" / f"{Path(file_name).stem}.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with output_path.open("w", encoding="utf-8") as f:
+        f.write(data)
+
+    print(f"✅ JSON output saved to {output_path.resolve()}")

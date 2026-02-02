@@ -182,3 +182,6 @@ The final decision engine that aggregates all data and flags from previous steps
 * **Extraction Point:** The Document Agent raises a `LowExtractionConfidenceDiscrepancy` with high risk due to the missing critical field.
 * **Matching Point:** The Matching Agent raises a `POReferenceDiscrepancy` as the ID is missing, falling back to a `Supplier_Date_Product` fuzzy search to find a candidate.
 * **Result:** Although the Validation Agent may find no arithmetic errors, the Resolution Agent identifies the combination of a missing PO and low extraction confidence as a critical integrity failure. It defaults to **Escalate to Human**, mirroring real-world financial safety protocols.
+
+## 📁 Output Management
+All successful pipeline executions generate a standardized JSON record stored in the `outputs/` directory.

@@ -3,7 +3,7 @@ import asyncio
 from pydantic import ValidationError
 from app.workflow.graph import compiled_graph
 from app.models.graph import GraphState
-from app.utils.helpers import format_workflow_output
+from app.utils.helpers import format_workflow_output, save_json_output
 
 
 async def main():
@@ -21,10 +21,10 @@ async def main():
         print("--- Workflow Completed Successfully ---")
 
         formatted_json = format_workflow_output(result)
-        
+
         print("\n## FINAL SYSTEM OUTPUT")
         print(formatted_json)
-
+        save_json_output(formatted_json, file_name)
 
     except ValidationError as e:
         print(f"[Schema Error]: State validation failed.")

@@ -1,5 +1,8 @@
 from datetime import date, datetime
 from difflib import SequenceMatcher
+import json
+from app.models.graph import GraphState
+
 
 
 def string_similarity(str1: str, str2: str) -> float:
@@ -378,3 +381,42 @@ def validate_total_variance(
         "variance_percent": round(total_diff_pct, 2),
         "invoice_internal_diff": round(abs(computed_total - invoice_total), 2),
     }
+
+
+def format_workflow_output(result_dict: dict) -> str:
+    """
+    Parses the GraphState result into a structured, 
+    serializable JSON string with calculated net processing time.
+    """
+    state = GraphState(**result_dict)
+    data = state.model_dump()
+
+    # Calculate Net Processing Time (Sum of all agent execution times)
+    exec_map = data.get("execution_times", {})
+    net_processing_time_sec = round(sum(exec_map.values()), 3)
+
+    # Construct the final structure
+    invoice_data = data.get("extracted_invoice_results") or {}
+    
+    final_output = {
+        "invoice_metadata": {
+            "invoice_id": invoice_data.get("invoice_number", "UNKNOWN"),
+            "net_processing_time_sec": net_processing_time_sec,
+            "document_info": {
+                "filename": data.get("file_name"),
+                "file_size_kb": data.get("file_size_kb"),
+                "page_count": data.get("page_count")
+            }
+        },
+        "processing_results": {
+            "document_intelligence": data.get("document_intelligence_agent_state"),
+            "matching_results": data.get("matching_agent_state"),
+            "validation_results": data.get("audit_validation_agent_state"),
+            "resolution_action": data.get("resolution_agent_state"),
+        },
+        "discrepancies_found": data.get("discrepancies", []),
+        "agent_execution_trace": exec_map
+    }
+
+    # Serialize to JSON with formatting
+    return json.dumps(final_output, indent=2, default=str)

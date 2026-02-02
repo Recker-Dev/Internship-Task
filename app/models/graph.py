@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Literal
+from typing import Optional, List, Union, Literal, Dict
 from typing_extensions import Annotated
 from pydantic import BaseModel
 import operator
@@ -65,3 +65,5 @@ class GraphState(BaseModel):
         ],
         operator.add,  ## Enables auto append
     ] = []
+    
+    execution_times: Annotated[Dict[str,float], operator.ior] = {}

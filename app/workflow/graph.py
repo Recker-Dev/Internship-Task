@@ -20,104 +20,148 @@ from app.models.discrepancies_models.MatchingDiscrepancies import (
     POReferenceDiscrepancy,
     PartialDeliveryDiscrepancy,
 )
+import time
 
 
 # Create nodes (functions)
 async def document_extraction_and_validation_node(
     state: GraphState,
 ):
+    node_name = "document_intelligence_agent"
+    starttime = time.perf_counter()
     print("\n" + "=" * 60)
     print("---DOCUMENT EXTRACTION AND VALIDATION NODE---")
 
-    file_name = state.file_name
+    try:
+        file_name = state.file_name
 
-    # Extract the text from the given file
-    file_processing_result = await process_file(file_name)
+        # Extract the text from the given file
+        file_processing_result = await process_file(file_name)
 
-    # Validate the invoice results
-    result = await validate_invoice(file_processing_result["content"])
+        # Validate the invoice results
+        result = await validate_invoice(file_processing_result["content"])
 
-    # --- LOG CONFIDENCE SCORES & REASONING ---
-    log_document_intelligence_agent_results(result)
+        # --- LOG CONFIDENCE SCORES & REASONING ---
+        log_document_intelligence_agent_results(result)
 
-    # Assuming the response is what you want
-    return {
-        "file_size_kb": file_processing_result["file_size_kb"],
-        "page_count": file_processing_result["page_count"],
-        "extracted_invoice_results": result.extracted_data,
-        "document_intelligence_agent_state": result,
-        "discrepancies": result.discrepancies or [],
-        "last_node_triggered": "document_intelligence_node",
-    }
+        duration = round(time.perf_counter() - starttime, 3)
+
+        # Assuming the response is what you want
+        return {
+            "file_size_kb": file_processing_result["file_size_kb"],
+            "page_count": file_processing_result["page_count"],
+            "extracted_invoice_results": result.extracted_data,
+            "document_intelligence_agent_state": result,
+            "discrepancies": result.discrepancies or [],
+            "last_node_triggered": "document_intelligence_node",
+            "execution_times": {node_name: duration},
+        }
+
+    except Exception as e:
+        duration = round(time.perf_counter() - starttime, 3)
+        print(f"{node_name} failed after {duration}s")
+        raise e  ## Re-raise
 
 
 async def matching_node(state: GraphState):
     print("\n" + "=" * 60)
     print("---DOCUMENT MATCHING AGENT NODE---")
+    node_name = "document_matching_agent"
+    starttime = time.perf_counter()
 
-    invoice = state.extracted_invoice_results
-    if invoice is None:
-        raise ValueError("No extracted invoice data.")
+    try:
+        invoice = state.extracted_invoice_results
+        if invoice is None:
+            raise ValueError("No extracted invoice data.")
 
-    result = await match_invoice_with_db(invoice)
+        result = await match_invoice_with_db(invoice)
 
-    # --- LOG CONFIDENCE SCORES & REASONING ---
-    log_matching_agent_results(result)
+        # --- LOG CONFIDENCE SCORES & REASONING ---
+        log_matching_agent_results(result)
 
-    return {
-        "matching_agent_state": result,
-        "discrepancies": result.discrepancies or [],
-        "last_node_triggered": "po_matching_node",
-    }
+        duration = round(time.perf_counter() - starttime, 3)
+
+        return {
+            "matching_agent_state": result,
+            "discrepancies": result.discrepancies or [],
+            "last_node_triggered": "po_matching_node",
+            "execution_times": {node_name: duration},
+        }
+
+    except Exception as e:
+        duration = round(time.perf_counter() - starttime, 3)
+        print(f"{node_name} failed after {duration}s")
+        raise e  ## Re-raise
 
 
 async def auditing_validation_node(state: GraphState):
     print("\n" + "=" * 60)
     print("---AUDITING AND VALIDATION AGENT NODE---")
+    node_name = "auditing_and_validation_agent"
+    starttime = time.perf_counter()
+    try:
 
-    invoice = state.extracted_invoice_results
-    if invoice is None:
-        raise ValueError("No extracted invoice data.")
+        invoice = state.extracted_invoice_results
+        if invoice is None:
+            raise ValueError("No extracted invoice data.")
 
-    matched_po_number = None
-    matching_agent_state = state.matching_agent_state
-    if matching_agent_state is None:
-        raise ValueError("Matching Agent did not populate the state.")
-    matched_po_number = matching_agent_state.matched_po
-    if matched_po_number is None:
-        raise ValueError("No Matching PO Number.")
+        matched_po_number = None
+        matching_agent_state = state.matching_agent_state
+        if matching_agent_state is None:
+            raise ValueError("Matching Agent did not populate the state.")
+        matched_po_number = matching_agent_state.matched_po
+        if matched_po_number is None:
+            raise ValueError("No Matching PO Number.")
 
-    result = await validate_invoice_with_po(invoice, matched_po_number)
+        result = await validate_invoice_with_po(invoice, matched_po_number)
 
-    # --- LOG CONFIDENCE SCORES & REASONING ---
-    log_validation_agent_results(result)
+        # --- LOG CONFIDENCE SCORES & REASONING ---
+        log_validation_agent_results(result)
 
-    return {
-        "audit_validation_agent_state": result,
-        "discrepancies": result.discrepancies or [],
-        "last_node_triggered": "audit_and_validation_node",
-    }
+        duration = round(time.perf_counter() - starttime, 3)
+
+        return {
+            "audit_validation_agent_state": result,
+            "discrepancies": result.discrepancies or [],
+            "last_node_triggered": "audit_and_validation_node",
+            "execution_times": {node_name: duration},
+        }
+    except Exception as e:
+        duration = round(time.perf_counter() - starttime, 3)
+        print(f"{node_name} failed after {duration}s")
+        raise e  ## Re-raise
 
 
 async def resolution_node(state: GraphState):
     print("\n" + "=" * 60)
     print("---RESOLUTION AGENT NODE---")
-    if state.early_exit:
-        print("Early Exit Triggered -> Resolving Based on accumulated data yet.")
+    node_name = "resolution_recommendation_agent"
+    starttime = time.perf_counter()
+    try:
+        if state.early_exit:
+            print("Early Exit Triggered -> Resolving Based on accumulated data yet.")
 
-    result = await resolve_invoice_findings(
-        state.document_intelligence_agent_state,
-        state.matching_agent_state,
-        state.audit_validation_agent_state,
-    )
+        result = await resolve_invoice_findings(
+            state.document_intelligence_agent_state,
+            state.matching_agent_state,
+            state.audit_validation_agent_state,
+        )
 
-    # --- LOG CONFIDENCE SCORES & REASONING ---
-    log_resolution_agent_results(result)
+        # --- LOG CONFIDENCE SCORES & REASONING ---
+        log_resolution_agent_results(result)
 
-    return {
-        "resolution_agent_state": result,
-        "last_node_triggered": "resolution_node",
-    }
+        duration = round(time.perf_counter() - starttime, 3)
+
+        return {
+            "resolution_agent_state": result,
+            "last_node_triggered": "resolution_node",
+            "execution_times": {node_name: duration},
+        }
+        
+    except Exception as e:
+        duration = round(time.perf_counter() - starttime, 3)
+        print(f"{node_name} failed after {duration}s")
+        raise e  ## Re-raise
 
 
 def should_continue(state: GraphState) -> bool:

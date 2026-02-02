@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, END, START
+from langgraph.types import RetryPolicy
 from app.models.graph import GraphState
 from app.pdf_data_extraction.extract import process_file
 from app.ai.document_extraction import validate_invoice
@@ -176,10 +177,23 @@ graph = StateGraph(GraphState)
 graph.add_node(
     "Document Intelligence Agent",
     document_extraction_and_validation_node,
+    retry_policy=RetryPolicy(max_attempts=2),
 )
-graph.add_node("Po Matching Agent", matching_node)
-graph.add_node("Audit and Validation Agent", auditing_validation_node)
-graph.add_node("Resolution Agent", resolution_node)
+graph.add_node(
+    "Po Matching Agent",
+    matching_node,
+    retry_policy=RetryPolicy(max_attempts=2),
+)
+graph.add_node(
+    "Audit and Validation Agent",
+    auditing_validation_node,
+    retry_policy=RetryPolicy(max_attempts=2),
+)
+graph.add_node(
+    "Resolution Agent",
+    resolution_node,
+    retry_policy=RetryPolicy(max_attempts=2),
+)
 
 # Connect the Edges
 graph.add_edge(START, "Document Intelligence Agent")

@@ -33,7 +33,7 @@ async def main():
         print(f"[Value Error]: Received an inappropriate value. {e}")
 
     except RuntimeError as e:
-        print(f"[Runtime Error]: An error occurred during graph execution. {e}")
+        print(f"[Runtime Error]: An error occurred during runtime execution. {e}")
 
     except Exception as e:
         print(f"[Unexpected Error]: {type(e).__name__} - {str(e)}")
